@@ -7,25 +7,26 @@ namespace Gustavo.NotificationTestAPI.Repositories
     {
 
         public readonly DbSession _dbSession;
-        public NotificationRepository(DbSession _dbSession) {
+        public NotificationRepository(DbSession _dbSession)
+        {
             this._dbSession = _dbSession;
         }
 
         public async Task<List<Notification>> GetAllAsync()
         {
-            using(var conn = _dbSession.connection)
+            using (var conn = _dbSession.connection)
             {
                 var query = @"SELECT * FROM Notifications;";
                 List<Notification> notifications = (await conn.QueryAsync<Notification>(query)).ToList();
 
-                foreach(var notification in notifications)
+                foreach (var notification in notifications)
                 {
                     if (notification.DisplayType.Equals("ALL_USERS"))
                     {
                         notification.IsPublic = true;
                         notification.UserId = null;
                     }
-                    if(notification.DisplayType.Equals("USER")) notification.IsPublic = false;
+                    if (notification.DisplayType.Equals("USER")) notification.IsPublic = false;
                 }
                 return notifications;
             }
@@ -56,20 +57,38 @@ namespace Gustavo.NotificationTestAPI.Repositories
             throw new NotImplementedException();
         }
 
-        Task<List<Notification>> INotificationRepository.GetAllAsync()
+        public async Task<Notification> GetAsync(int id)
         {
-            throw new NotImplementedException();
+            using (var conn = _dbSession.connection)
+            {
+                var query = "SELECT * FROM Notifications WHERE id=@Id;";
+                var notification = await conn.QueryFirstOrDefaultAsync<Notification>(query, new { Id = id });
+
+                return notification;
+            }
         }
 
-        Task<Notification> INotificationRepository.GetAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
 
-        
-        Task<int> INotificationRepository.SaveAsync(Notification notification)
+        public async Task<bool> SaveAsync(Notification notification)
         {
-            throw new NotImplementedException();
+            using (var conn = _dbSession.connection)
+            {
+                var parmts = new
+                {
+                    Title = notification.Title,
+                    Description = notification.Description,
+                    InteractionUrl = notification.InteractionURL,
+                    ImageUrl = notification.ImageURL,
+                    Type = notification.Type,
+                    DisplayType = notification.DisplayType
+                };
+
+
+                var query = "INSERT INTO Notifications (Title, Description, InteractionURL, ImageURL, Type, DisplayType) VALUES (@Title, @Description, @InteractionUrl, @ImageUrl, @Type, @DisplayType);";
+                bool inserted = (await conn.ExecuteAsync(query, parmts)) == 1;
+
+                return inserted;
+            }
         }
 
         Task<int?> INotificationRepository.UpdateAsync(Notification notification)

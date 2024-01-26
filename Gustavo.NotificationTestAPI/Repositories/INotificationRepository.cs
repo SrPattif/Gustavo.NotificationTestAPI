@@ -8,7 +8,7 @@ namespace Gustavo.NotificationTestAPI.Repositories
         Task<List<Notification>> GetAllAsync();
         Task<Notification> GetAsync(int id);
         Task<List<Notification>> GetUserAllNotificationsAsync(int userId);
-        Task<int> SaveAsync(Notification notification);
+        Task<bool> SaveAsync(Notification notification);
         Task<int?> UpdateAsync(Notification notification);
         Task<int> DeleteAsync(int id);
     }

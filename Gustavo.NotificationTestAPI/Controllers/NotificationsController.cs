@@ -1,4 +1,5 @@
-﻿using Gustavo.NotificationTestAPI.Repositories;
+﻿using Gustavo.NotificationTestAPI.Model;
+using Gustavo.NotificationTestAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -34,15 +35,48 @@ namespace Gustavo.NotificationTestAPI.Controllers
 
         // GET api/<NotificationsController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<ActionResult> GetFromId(int id)
         {
-            return "value";
+            var notification = await _notificationRepo.GetAsync(id);
+
+            if (notification == null)
+            {
+                return BadRequest(new { success = false, error_code = "INVALID_NOTIFICATION_ID" });
+            }
+            return Ok(new { success = true, data = notification });
         }
 
         // POST api/<NotificationsController>
         [HttpPost]
-        public void Post([FromBody] string value)
+        public async Task<ActionResult> Post([FromBody] NotificationInputModel model)
         {
+            var title = model.Title;
+            var description = model.Description;
+            var interactionUrl = model.InteractionUrl ?? null;
+            var imageUrl = model.ImageUrl ?? null;
+            var type = model.Type ?? "DEFAULT";
+            var displayType = model.DisplayType ?? "ALL_USERS";
+
+            Notification newNotification = new Notification()
+            {
+                Title = title,
+                Description = description,
+                InteractionURL = interactionUrl,
+                ImageURL = imageUrl,
+                Type = type,
+                DisplayType = displayType
+            };
+
+            var inserted = await _notificationRepo.SaveAsync(newNotification);
+            if(inserted)
+            {
+                return Ok(new { success = true, data = newNotification });
+
+            } else
+            {
+                return BadRequest(new { success = false, error_code = "UNKNOWN_DATABASE_ERROR" });
+            }
+            
         }
 
         // PUT api/<NotificationsController>/5
@@ -56,5 +90,15 @@ namespace Gustavo.NotificationTestAPI.Controllers
         public void Delete(int id)
         {
         }
+    }
+
+    public class NotificationInputModel
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string? InteractionUrl { get; set; }
+        public string? ImageUrl { get; set; }
+        public string Type { get; set; } = "DEFAULT";
+        public string DisplayType { get; set; } = "ALL_USERS";
     }
 }
