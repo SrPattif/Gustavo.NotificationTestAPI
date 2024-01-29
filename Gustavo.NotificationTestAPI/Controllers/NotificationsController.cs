@@ -87,7 +87,8 @@ namespace Gustavo.NotificationTestAPI.Controllers
                 }
             } catch(Exception ex)
             {
-                return BadRequest(new { success = false, error_code = "INTERNAL_ERROR" });
+                
+                return BadRequest(new { success = false, error_code = "INTERNAL_ERROR", message = ex.Message });
             }
             
         }
