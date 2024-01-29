@@ -1,9 +1,6 @@
 using Gustavo.NotificationTestAPI.Middlewares;
 using Gustavo.NotificationTestAPI.Model;
 using Gustavo.NotificationTestAPI.Repositories;
-using Microsoft.AspNetCore.Diagnostics;
-using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
