@@ -29,7 +29,12 @@ namespace Gustavo.NotificationTestAPI.Middlewares
                     exception, "Exception occurred: {Message}", exception.Message);
 
                 context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-                await context.Response.WriteAsJsonAsync(new { success = false, error_code = "INTERNAL_ERROR" });
+                await context.Response.WriteAsJsonAsync(
+                    new {
+                        success = false,
+                        error_code = "INTERNAL_ERROR",
+                        message = exception.Message
+                    });
             }
         }
     }
