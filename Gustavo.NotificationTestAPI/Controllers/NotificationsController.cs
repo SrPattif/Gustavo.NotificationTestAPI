@@ -1,6 +1,7 @@
 ﻿using Gustavo.NotificationTestAPI.Model;
 using Gustavo.NotificationTestAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Serialization;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -50,31 +51,43 @@ namespace Gustavo.NotificationTestAPI.Controllers
         [HttpPost]
         public async Task<ActionResult> Post([FromBody] NotificationInputModel model)
         {
-            var title = model.Title;
-            var description = model.Description;
-            var interactionUrl = model.InteractionUrl ?? null;
-            var imageUrl = model.ImageUrl ?? null;
-            var type = model.Type ?? "DEFAULT";
-            var displayType = model.DisplayType ?? "ALL_USERS";
-
-            Notification newNotification = new Notification()
+            try
             {
-                Title = title,
-                Description = description,
-                InteractionURL = interactionUrl,
-                ImageURL = imageUrl,
-                Type = type,
-                DisplayType = displayType
-            };
+                var title = model.Title;
+                var description = model.Description;
+                var interactionUrl = model.InteractionUrl ?? null;
+                var imageUrl = model.ImageUrl ?? null;
+                var type = model.Type ?? "DEFAULT";
+                var displayType = model.DisplayType ?? "ALL_USERS";
 
-            var inserted = await _notificationRepo.SaveAsync(newNotification);
-            if(inserted)
-            {
-                return Ok(new { success = true, data = newNotification });
+                if (title == null || description == null)
+                {
+                    return BadRequest(new { success = false, error_code = "MISSING_FIELDS" });
+                }
 
-            } else
+                Notification newNotification = new Notification()
+                {
+                    Title = title,
+                    Description = description,
+                    InteractionURL = interactionUrl,
+                    ImageURL = imageUrl,
+                    Type = type,
+                    DisplayType = displayType
+                };
+
+                var inserted = await _notificationRepo.SaveAsync(newNotification);
+                if (inserted)
+                {
+                    return Ok(new { success = true, data = newNotification });
+
+                }
+                else
+                {
+                    return BadRequest(new { success = false, error_code = "UNKNOWN_DATABASE_ERROR" });
+                }
+            } catch(Exception ex)
             {
-                return BadRequest(new { success = false, error_code = "UNKNOWN_DATABASE_ERROR" });
+                return BadRequest(new { success = false, error_code = "INTERNAL_ERROR" });
             }
             
         }
@@ -94,8 +107,8 @@ namespace Gustavo.NotificationTestAPI.Controllers
 
     public class NotificationInputModel
     {
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
         public string? InteractionUrl { get; set; }
         public string? ImageUrl { get; set; }
         public string Type { get; set; } = "DEFAULT";
