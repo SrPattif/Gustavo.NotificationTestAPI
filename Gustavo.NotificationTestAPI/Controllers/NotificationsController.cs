@@ -1,9 +1,6 @@
 ﻿using Gustavo.NotificationTestAPI.Model;
 using Gustavo.NotificationTestAPI.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json.Serialization;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Gustavo.NotificationTestAPI.Controllers
 {
@@ -91,18 +88,6 @@ namespace Gustavo.NotificationTestAPI.Controllers
                 return BadRequest(new { success = false, error_code = "INTERNAL_ERROR", message = ex.Message });
             }
             
-        }
-
-        // PUT api/<NotificationsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
-
-        // DELETE api/<NotificationsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 
