@@ -75,6 +75,14 @@ namespace Gustavo.NotificationTestAPI.Controllers
                 var inserted = await _notificationRepo.SaveAsync(newNotification);
                 if (inserted)
                 {
+                    if (newNotification.DisplayType.Equals("ALL_USERS"))
+                    {
+                        newNotification.IsPublic = true;
+                        newNotification.UserId = null;
+                    }
+                    if (newNotification.DisplayType.Equals("USER")) newNotification.IsPublic = false;
+                    newNotification.CreatedAt = DateTime.Now;
+
                     return Ok(new { success = true, data = newNotification });
 
                 }

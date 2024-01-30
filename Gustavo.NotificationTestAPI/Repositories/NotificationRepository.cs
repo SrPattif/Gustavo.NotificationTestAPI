@@ -86,7 +86,7 @@ namespace Gustavo.NotificationTestAPI.Repositories
 
                 var query = "INSERT INTO Notifications (Title, Description, InteractionURL, ImageURL, Type, DisplayType) VALUES (@Title, @Description, @InteractionUrl, @ImageUrl, @Type, @DisplayType);";
                 bool inserted = (await conn.ExecuteAsync(query, parmts)) == 1;
-
+            
                 return inserted;
             }
         }
